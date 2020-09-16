@@ -24,16 +24,21 @@ fn main() {
     }
 }
 
-fn goRabbit(host:&str, user: &str, pass: &str, queue_name: &str, message_len: usize) -> Result<()> {
-    let mut connection = Connection::insecure_open("amqp://guest:guest@localhost:5672")?;
+fn goRabbit(host: &str, user: &str, pass: &str, queue_name: &str, message_len: usize) -> Result<()> {
+    let mut connection_string = &format!("amqp://{}:{}@{}:5672", user, pass, host) as &str; //"amqp://:{pass}@{host}:5672"
+    println!("{}", connection_string);
+
+    let mut connection = Connection::insecure_open(connection_string)?;
     let channel = connection.open_channel(None)?;
     let exchange = Exchange::direct(&channel);
 
-    let message = getMessage(8);
+    let message = getMessage(message_len);
 
-    // loop {
-    //   //exchange.publish(Publish::new(&message[0..message.len() - 1], "hello"))?;
-    // }
+    //exchange.publish(Publish::new(&message[0..message.len() - 1], queue_name))?;
+
+    loop {
+      exchange.publish(Publish::new(&message[0..message.len() - 1], "hello"))?;
+    }
     
     connection.close()
 }
