@@ -36,6 +36,8 @@ fn goRabbit(host: &str, user: &str, pass: &str, queue_name: &str, message_len: u
 
     //exchange.publish(Publish::new(&message[0..message.len() - 1], queue_name))?;
 
+    channel.enable_publisher_confirms();
+
     loop {
       exchange.publish(Publish::new(&message[0..message.len() - 1], "hello"))?;
     }
